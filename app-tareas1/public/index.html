@@ -43,7 +43,7 @@
     const title = document.getElementById('searchTitle').value;
     const lista = document.getElementById('listaResultados');
     
-    let url = '/tasks/search?'; 
+    let url = 'http://localhost:3000/tasks/search?';
     let params = [];
 
     if (id) params.push(`id=${id}`);
