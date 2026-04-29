@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>App Tareas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Usuarios</h1>
+<input id="userName" placeholder="Nombre">
+<button onclick="crearUsuario()">Crear</button>
+
+<ul id="listaUsuarios"></ul>
+
+<h1>Tareas</h1>
+<input id="taskTitle" placeholder="Tarea">
+<select id="userId">
+    <option value="">Seleccione un usuario</option>
+</select>
+<button onclick="crearTarea()">Crear</button>
+
+<ul id="listaTareas"></ul>
+
+<script src="app.js"></script>
+
+<h1>Buscador de Tareas</h1>
+
+    <div class="search-box">
+        <input type="number" id="searchId" placeholder="Buscar por ID">
+        <input type="text" id="searchTitle" placeholder="Buscar por Título">
+        <button onclick="buscar()">BUSCAR</button>
+    </div>
+
+    <ul id="listaResultados">
+        </ul>
+
+    <script>
+        async function buscar() {
+    const id = document.getElementById('searchId').value;
+    const title = document.getElementById('searchTitle').value;
+    const lista = document.getElementById('listaResultados');
+    
+    let url = '/tasks/search?'; 
+    let params = [];
+
+    if (id) params.push(`id=${id}`);
+    if (title) params.push(`title=${encodeURIComponent(title)}`);
+
+    url += params.join('&');
+
+    try {
+        const response = await fetch(url); 
+        
+        if (!response.ok) throw new Error('Error en la respuesta');
+
+        const tareas = await response.json();
+        lista.innerHTML = ''; 
+
+        if (tareas.length === 0) {
+            lista.innerHTML = '<li>No se encontraron tareas</li>';
+            return;
+        }
+
+        tareas.forEach(t => {
+            lista.innerHTML += `
+                <li>
+                    <strong>#${t.id}</strong> - ${t.title} <br>
+                    <small style="color: #7f8c8d;">Usuario: ${t.name}</small>
+                </li>`;
+        });
+    } catch (error) {
+        console.error("Detalle del error:", error);
+        lista.innerHTML = '<li>Error al conectar con el servidor</li>';
+    }
+}
+    </script>
+</body>
+</html>
